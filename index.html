@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헌법 객관식 기출 퀴즈</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css" />
+    <style>
+        body { 
+            font-family: 'Pretendard Variable', Pretendard, sans-serif;
+            background-color: #f1f5f9; 
+            color: #1e293b; 
+            margin: 0; 
+            padding: 20px 15px; 
+            display: flex; 
+            justify-content: center; 
+            letter-spacing: -0.015em;
+            word-break: keep-all; 
+        }
+        
+        #app { max-width: 640px; width: 100%; }
+        
+        .quiz-card { 
+            background: #ffffff; 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); 
+            margin-bottom: 24px; 
+        }
+        
+        h2 { 
+            text-align: center; 
+            color: #0f172a; 
+            margin-top: 0; 
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .btn { 
+            padding: 16px 20px; 
+            border: none; 
+            border-radius: 16px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            transition: all 0.2s ease; 
+            font-weight: 600; 
+        }
+        .btn-primary { background: #6366f1; color: #ffffff; width: 100%; margin-bottom: 12px; }
+        .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+
+        .btn-secondary { background: #f8fafc; color: #475569; width: 100%; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #f1f5f9; color: #1e293b; }
+
+        .btn-gray { background: #e2e8f0; color: #475569; }
+        .btn-gray:hover { background: #cbd5e1; }
+        
+        .btn-ox { 
+            width: 48%; 
+            font-size: 2.2rem; 
+            padding: 24px 20px; 
+            background: #ffffff; 
+            color: #cbd5e1; 
+            border: 2px solid #e2e8f0;
+            border-radius: 20px; 
+            font-weight: 500;
+        }
+        .btn-ox:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.04); }
+        .btn-ox.o-btn { color: #059669; } 
+        .btn-ox.o-btn:hover { border-color: #059669; background: #ecfdf5; }
+        .btn-ox.x-btn { color: #e11d48; } 
+        .btn-ox.x-btn:hover { border-color: #e11d48; background: #fff1f2; }
+
+        .section-box { 
+            margin-bottom: 24px; 
+            padding: 24px; 
+            background: #ffffff;
+            border-radius: 16px; 
+            border: 2px solid #e2e8f0;
+        }
+        .section-title { 
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            color: #6366f1; 
+            margin-bottom: 15px; 
+            margin-top: 0; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .source-badge {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .section-content { 
+            line-height: 1.7; 
+            white-space: pre-wrap; 
+            font-size: 1.15rem; 
+            font-weight: 600;
+            color: #0f172a; 
+        }
+
+        .top-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 24px; 
+        }
+        .progress-text { 
+            font-size: 0.9rem; 
+            color: #475569; 
+            font-weight: 700; 
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 24px; 
+        }
+        .nav-buttons { display: flex; gap: 8px; align-items: center; }
+        
+        .sub-btn { 
+            background: #ffffff; 
+            color: #64748b; 
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px; 
+            font-size: 0.9rem; 
+            border-radius: 12px;
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.2s;
+        }
+        .sub-btn:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+        
+        .bookmark-btn { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            color: #cbd5e1; 
+            padding: 0; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s, transform 0.1s;
+        }
+        .bookmark-btn svg { width: 28px; height: 28px; }
+        .bookmark-btn:hover { transform: scale(1.1); }
+        .bookmark-btn.active { color: #f59e0b; }
+
+        .result-container { 
+            margin-top: 30px; 
+            padding-top: 25px;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        .result-header-text {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .answer-compare-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            background: #ffffff;
+            border: 2px solid #f1f5f9;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .answer-compare-box .highlight {
+            font-size: 2rem;
+            margin-left: 10px;
+            font-weight: 800;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .text-green { color: #059669; }
+        .text-red { color: #e11d48; }
+
+        .exp-box {
+            background: #f8fafc; 
+            border-left: 4px solid #94a3b8; 
+            border-radius: 4px 16px 16px 4px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .exp-title {
+            font-weight: 700; 
+            font-size: 0.85rem; 
+            color: #64748b; 
+            margin-bottom: 10px; 
+            margin-top: 0;
+        }
+        .exp-content {
+            line-height: 1.7; 
+            font-size: 1rem; 
+            color: #334155;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="loading" class="quiz-card" style="text-align: center; padding: 60px 0;">
+            <h3 style="color: #6366f1; font-weight: 700; font-size: 1.2rem;">데이터를 파싱하고 있습니다</h3>
+            <p style="color: #94a3b8; font-size: 0.95rem; margin-top: 10px;">잠시만 기다려주세요</p>
+        </div>
+
+        <div id="start-menu" class="quiz-card hidden">
+            <h2>헌법 기출 선지 퀴즈</h2>
+            <p style="text-align:center; margin-bottom:40px; color:#94a3b8; font-size: 0.95rem;" id="total-count-msg"></p>
+            
+            <button class="btn btn-primary" onclick="startQuiz('all')">전체 문항 풀기</button>
+            <button class="btn btn-secondary" onclick="startQuiz('bookmark')">저장한 문항만 풀기</button>
+        </div>
+
+        <div id="quiz-container" class="hidden">
+            <div class="top-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="progress-text" id="question-counter"></span>
+                    <button class="sub-btn" id="top-prev-btn" onclick="prevQuestion()">이전</button>
+                </div>
+                <div class="nav-buttons">
+                    <button class="sub-btn" onclick="location.reload()">메인</button>
+                    <button class="bookmark-btn" id="bookmark-btn" onclick="toggleBookmark()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="quiz-card" style="padding-top: 25px; padding-bottom: 25px;">
+                <div class="section-box">
+                    <h3 class="section-title">
+                        <span>기출 선지</span>
+                        <span id="source-badge" class="source-badge hidden"></span>
+                    </h3>
+                    <div class="section-content" id="question"></div>
+                </div>
+                
+                <div id="ox-buttons" style="display: flex; justify-content: space-between; margin-top: 32px;">
+                    <button class="btn btn-ox o-btn" onclick="checkAnswer('O')">O</button>
+                    <button class="btn btn-ox x-btn" onclick="checkAnswer('X')">X</button>
+                </div>
+
+                <div id="result-container" class="result-container hidden">
+                    <div id="result-header" class="result-header-text">
+                        <span id="result-status"></span>
+                    </div>
+                    
+                    <div class="answer-compare-box">
+                        <div>정답 <span id="actual-answer" class="highlight"></span></div>
+                        <div style="width: 2px; height: 30px; background: #f1f5f9; border-radius: 2px;"></div>
+                        <div>내 선택 <span id="user-answer" class="highlight"></span></div>
+                    </div>
+                    
+                    <div class="exp-box">
+                        <h3 class="exp-title">해설</h3>
+                        <div class="exp-content" id="explanation"></div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button class="btn btn-gray" id="bottom-prev-btn" onclick="prevQuestion()" style="flex: 1; margin: 0;">이전</button>
+                        <button class="btn btn-primary" onclick="nextQuestion()" style="flex: 2; margin: 0;">다음 문항</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="quiz-card hidden" style="text-align: center; padding: 60px 30px;">
+            <h2 style="font-size: 1.6rem; margin-bottom: 15px; color: #0f172a;">학습 완료</h2>
+            <p style="color: #64748b; margin-bottom: 35px; font-size: 1.05rem;">준비된 문항을 모두 확인했습니다.</p>
+            <button class="btn btn-primary" onclick="location.reload()">처음으로 돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        let rawData = [];
+        let quizQueue = [];
+        let currentIndex = 0;
+        let bookmarks = JSON.parse(localStorage.getItem('hunbubBookmarks')) || [];
+
+        const svgEmptyStar = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+        const svgFilledStar = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+
+        function generateId(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return "q_" + Math.abs(hash);
+        }
+
+        // data.txt 파일을 불러와서 파싱하는 로직
+        fetch('data.txt')
+            .then(response => {
+                if (!response.ok) throw new Error("File not found");
+                return response.text();
+            })
+            .then(text => {
+                // "[ ◉ " 기준으로 텍스트를 분할합니다.
+                const blocks = text.split(/\s*\[ ◉ /);
+                
+                blocks.forEach(block => {
+                    if (!block.trim()) return;
+
+                    // 첫 번째 ']' 앞의 내용을 출처(source)로 인식합니다.
+                    const idMatch = block.match(/^(.*?)]/);
+                    if (!idMatch) return;
+                    const sourceId = idMatch[1].trim();
+
+                    // 출처 이후의 나머지 텍스트
+                    const rest = block.substring(idMatch[0].length);
+
+                    // [O] 또는 [X] 또는 [X: 해설내용] 형태를 정규식으로 찾습니다.
+                    const answerMatch = rest.match(/\[([OX])(?:[:.\s]+([^\]]*))?\]/);
+
+                    if (answerMatch) {
+                        const questionText = rest.substring(0, answerMatch.index).trim();
+                        const answer = answerMatch[1].toUpperCase();
+                        const explanation = answerMatch[2] ? answerMatch[2].trim() : "";
+
+                        rawData.push({
+                            id: generateId(questionText),
+                            source: sourceId,
+                            question: questionText,
+                            answer: answer,
+                            exp: explanation || "별도의 해설이 제공되지 않았습니다."
+                        });
+                    }
+                });
+
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('start-menu').classList.remove('hidden');
+                document.getElementById('total-count-msg').innerText = `총 ${rawData.length}문항 로드 완료`;
+            })
+            .catch(error => {
+                alert("data.txt 파일을 불러오는 데 실패했습니다. 파일명과 인코딩(UTF-8)을 확인해 주세요.");
+            });
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startQuiz(mode) {
+            document.getElementById('start-menu').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+
+            if (mode === 'bookmark') {
+                quizQueue = rawData.filter(q => bookmarks.includes(q.id));
+                if (quizQueue.length === 0) {
+                    alert('저장된 문항이 없습니다.');
+                    location.reload();
+                    return;
+                }
+            } else {
+                quizQueue = [...rawData];
+            }
+
+            shuffle(quizQueue);
+            currentIndex = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentIndex >= quizQueue.length) {
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('end-screen').classList.remove('hidden');
+                return;
+            }
+
+            const q = quizQueue[currentIndex];
+            
+            document.getElementById('question-counter').innerText = `Q. ${currentIndex + 1} / ${quizQueue.length}`;
+            document.getElementById('question').innerText = q.question;
+            
+            const sourceBadge = document.getElementById('source-badge');
+            if(q.source !== "") {
+                sourceBadge.innerText = q.source;
+                sourceBadge.classList.remove('hidden');
+            } else {
+                sourceBadge.classList.add('hidden');
+            }
+            
+            const bookmarkBtn = document.getElementById('bookmark-btn');
+            if (bookmarks.includes(q.id)) {
+                bookmarkBtn.classList.add('active');
+                bookmarkBtn.innerHTML = svgFilledStar;
+            } else {
+                bookmarkBtn.classList.remove('active');
+                bookmarkBtn.innerHTML = svgEmptyStar;
+            }
+
+            const topPrevBtn = document.getElementById('top-prev-btn');
+            const bottomPrevBtn = document.getElementById('bottom-prev-btn');
+            if (currentIndex === 0) {
+                topPrevBtn.style.visibility = 'hidden'; 
+                bottomPrevBtn.style.visibility = 'hidden';
+            } else {
+                topPrevBtn.style.visibility = 'visible';
+                bottomPrevBtn.style.visibility = 'visible';
+            }
+
+            document.getElementById('result-container').classList.add('hidden');
+            document.getElementById('ox-buttons').classList.remove('hidden');
+        }
+
+        function checkAnswer(userChoice) {
+            const q = quizQueue[currentIndex];
+            const isCorrect = userChoice === q.answer;
+
+            const resultStatus = document.getElementById('result-status');
+            const actualAnswerEl = document.getElementById('actual-answer');
+            const userAnswerEl = document.getElementById('user-answer');
+            const resultContainer = document.getElementById('result-container');
+            
+            actualAnswerEl.innerText = q.answer;
+            actualAnswerEl.className = q.answer === 'O' ? 'highlight text-green' : 'highlight text-red';
+            
+            userAnswerEl.innerText = userChoice;
+            userAnswerEl.className = userChoice === 'O' ? 'highlight text-green' : 'highlight text-red';
+
+            if (isCorrect) {
+                resultStatus.innerHTML = "<span class='text-green'>정답입니다</span>";
+            } else {
+                resultStatus.innerHTML = "<span class='text-red'>오답입니다</span>";
+            }
+
+            document.getElementById('explanation').innerText = q.exp;
+
+            document.getElementById('ox-buttons').classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            loadQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            }
+        }
+
+        function toggleBookmark() {
+            const qId = quizQueue[currentIndex].id;
+            const index = bookmarks.indexOf(qId);
+            const bookmarkBtn = document.getElementById('bookmark-btn');
+            
+            if (index > -1) {
+                bookmarks.splice(index, 1);
+                bookmarkBtn.classList.remove('active');
+                bookmarkBtn.innerHTML = svgEmptyStar;
+            } else {
+                bookmarks.push(qId);
+                bookmarkBtn.classList.add('active');
+                bookmarkBtn.innerHTML = svgFilledStar;
+            }
+            
+            localStorage.setItem('hunbubBookmarks', JSON.stringify(bookmarks));
+        }
+    </script>
+</body>
+</html>
