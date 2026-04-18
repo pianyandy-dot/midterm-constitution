@@ -6,6 +6,7 @@
     <title>헌법 객관식 기출 퀴즈</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css" />
     <style>
+        /* 모던 & 미니멀 베이스 설정 */
         body { 
             font-family: 'Pretendard Variable', Pretendard, sans-serif;
             background-color: #f1f5f9; 
@@ -20,6 +21,7 @@
         
         #app { max-width: 640px; width: 100%; }
         
+        /* 메인 카드 레이아웃: 모서리를 부드럽게 */
         .quiz-card { 
             background: #ffffff; 
             padding: 40px 30px; 
@@ -36,6 +38,7 @@
             font-size: 1.5rem;
         }
         
+        /* 통일감 있는 부드러운 버튼 스타일 */
         .btn { 
             padding: 16px 20px; 
             border: none; 
@@ -54,6 +57,7 @@
         .btn-gray { background: #e2e8f0; color: #475569; }
         .btn-gray:hover { background: #cbd5e1; }
         
+        /* O/X 선택 버튼 - 가독성과 색상 대비 명확화 */
         .btn-ox { 
             width: 48%; 
             font-size: 2.2rem; 
@@ -70,6 +74,7 @@
         .btn-ox.x-btn { color: #e11d48; } 
         .btn-ox.x-btn:hover { border-color: #e11d48; background: #fff1f2; }
 
+        /* 섹션 박스 디자인 */
         .section-box { 
             margin-bottom: 24px; 
             padding: 24px; 
@@ -103,6 +108,7 @@
             color: #0f172a; 
         }
 
+        /* 상단 네비게이션 바 */
         .top-bar { 
             display: flex; 
             justify-content: space-between; 
@@ -132,6 +138,7 @@
         }
         .sub-btn:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
         
+        /* 모던한 SVG 북마크 아이콘 */
         .bookmark-btn { 
             background: none; 
             border: none; 
@@ -147,6 +154,7 @@
         .bookmark-btn:hover { transform: scale(1.1); }
         .bookmark-btn.active { color: #f59e0b; }
 
+        /* 결과 화면 디자인 */
         .result-container { 
             margin-top: 30px; 
             padding-top: 25px;
@@ -289,7 +297,7 @@
         let rawData = [];
         let quizQueue = [];
         let currentIndex = 0;
-        let bookmarks = JSON.parse(localStorage.getItem('hunbubBookmarks')) || [];
+        let bookmarks = JSON.parse(localStorage.getItem('hunbubBookmarks_v2')) || [];
 
         const svgEmptyStar = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
         const svgFilledStar = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
@@ -303,51 +311,66 @@
             return "q_" + Math.abs(hash);
         }
 
-        // data.txt 파일을 불러와서 파싱하는 로직
+        // data.txt 파일을 불러와서 아주 강력한 정규식으로 파싱합니다.
         fetch('data.txt')
             .then(response => {
                 if (!response.ok) throw new Error("File not found");
                 return response.text();
             })
             .then(text => {
-                // "[ ◉ " 기준으로 텍스트를 분할합니다.
-                const blocks = text.split(/\s*\[ ◉ /);
+                // 특수기호가 깨져있어도 '숫자+변' 이라는 패턴을 찾아 블록을 완벽하게 나눕니다.
+                const regex = /(?:^|\n)\s*(?:\d+\)\s*)?\[\s*(?:◉|\?|○|●|■|•)?\s*(\d+변[^\]]*)\]([\s\S]*?)(?=(?:^|\n)\s*(?:\d+\)\s*)?\[\s*(?:◉|\?|○|●|■|•)?\s*\d+변[^\]]*\]|$)/g;
                 
-                blocks.forEach(block => {
-                    if (!block.trim()) return;
-
-                    // 첫 번째 ']' 앞의 내용을 출처(source)로 인식합니다.
-                    const idMatch = block.match(/^(.*?)]/);
-                    if (!idMatch) return;
-                    const sourceId = idMatch[1].trim();
-
-                    // 출처 이후의 나머지 텍스트
-                    const rest = block.substring(idMatch[0].length);
-
-                    // [O] 또는 [X] 또는 [X: 해설내용] 형태를 정규식으로 찾습니다.
-                    const answerMatch = rest.match(/\[([OX])(?:[:.\s]+([^\]]*))?\]/);
-
-                    if (answerMatch) {
-                        const questionText = rest.substring(0, answerMatch.index).trim();
-                        const answer = answerMatch[1].toUpperCase();
-                        const explanation = answerMatch[2] ? answerMatch[2].trim() : "";
-
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    const sourceId = match[1].trim();
+                    let body = match[2].trim();
+                    
+                    // 지문 중에 [X] 라는 글자가 섞여있을 수 있으므로 가장 마지막에 등장하는 [O]/[X]를 정답으로 간주합니다.
+                    const ansRegex = /\[\s*([OX])\s*([:.\-]\s*[^\]]*)?\]/ig;
+                    let ansMatch = null;
+                    let temp;
+                    while ((temp = ansRegex.exec(body)) !== null) {
+                        ansMatch = temp;
+                    }
+                    
+                    if(ansMatch) {
+                        // [O] / [X] 앞부분은 모두 선지(문제)로 인식
+                        const questionText = body.substring(0, ansMatch.index).trim();
+                        const answer = ansMatch[1].toUpperCase();
+                        
+                        let explanation = "";
+                        // 1. [X: 151명 이상] 처럼 괄호 안에 적힌 해설 추출
+                        if (ansMatch[2]) {
+                            explanation += ansMatch[2].replace(/^[:.\-\s]+/, '').trim() + "\n\n";
+                        }
+                        // 2. [O] 이후 줄바꿈하고 적어둔 추가 해설 추출
+                        const afterAns = body.substring(ansMatch.index + ansMatch[0].length).trim();
+                        if (afterAns) {
+                            explanation += afterAns;
+                        }
+                        
                         rawData.push({
-                            id: generateId(questionText),
+                            id: generateId(questionText + sourceId),
                             source: sourceId,
                             question: questionText,
                             answer: answer,
-                            exp: explanation || "별도의 해설이 제공되지 않았습니다."
+                            exp: explanation.trim() || "별도의 해설이 제공되지 않았습니다."
                         });
                     }
-                });
+                }
 
                 document.getElementById('loading').classList.add('hidden');
-                document.getElementById('start-menu').classList.remove('hidden');
-                document.getElementById('total-count-msg').innerText = `총 ${rawData.length}문항 로드 완료`;
+                
+                if (rawData.length === 0) {
+                    alert("문항을 찾지 못했습니다. Github에 업로드된 파일의 이름이 data.txt 가 맞는지 확인해주세요.");
+                } else {
+                    document.getElementById('start-menu').classList.remove('hidden');
+                    document.getElementById('total-count-msg').innerText = `총 ${rawData.length}문항 로드 완료`;
+                }
             })
             .catch(error => {
-                alert("data.txt 파일을 불러오는 데 실패했습니다. 파일명과 인코딩(UTF-8)을 확인해 주세요.");
+                alert("data.txt 파일을 불러오는 데 실패했습니다. 파일명과 확장자를 확인해 주세요.");
             });
 
         function shuffle(array) {
@@ -474,7 +497,7 @@
                 bookmarkBtn.innerHTML = svgFilledStar;
             }
             
-            localStorage.setItem('hunbubBookmarks', JSON.stringify(bookmarks));
+            localStorage.setItem('hunbubBookmarks_v2', JSON.stringify(bookmarks));
         }
     </script>
 </body>
